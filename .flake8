@@ -1,0 +1,13 @@
+[flake8]
+exclude =
+    .git
+    .venv
+    .pytest_cache
+    .mypy_cache
+    __pycache__
+
+ignore =
+    E203, 
+    E231, 
+    E501, 
+    W503  
