@@ -1,0 +1,16 @@
+{
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    },
+    "editor.fontSize": 14,
+    "editor.bracketPairColorization.enabled": true,
+    "editor.renderWhitespace": "all",
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true,
+
+    "python.analysis.extraPaths": [
+        "../venv/lib/python3.10/site-packages"
+    ]
+}
