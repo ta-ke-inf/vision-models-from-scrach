@@ -15,7 +15,7 @@ class MultiHeadSelfAttention(nn.Module):
             head (int, optional): head num. Defaults to 3.
             dropout (float, optional): drop out ratio. Defaults to 0..
         """
-
+        super(MultiHeadSelfAttention, self).__init__()
         self.head = head # h
         self.emb_dim = 384 # D
         self.dropout = dropout
@@ -44,6 +44,10 @@ class MultiHeadSelfAttention(nn.Module):
         v = self.w_v(x) # [B, N, D] -> [B, N, D]
 
         batch_size, num_patch, _ = x.size()
-        q_head = q.view(batch_size, num_patch, self.head, self.head_dim) # [B, N, D] -> [B, N, h, D/h]
-        k_head = k.view(batch_size, num_patch, self.head, self.head_dim)
-        v_head = v.view(batch_size, num_patch, self.head, self.head_dim)
+        q_heads = q.view(batch_size, num_patch, self.head, self.head_dim) # [B, N, D] -> [B, N, h, D/h]
+        k_heads = k.view(batch_size, num_patch, self.head, self.head_dim)
+        v_heads = v.view(batch_size, num_patch, self.head, self.head_dim)
+
+        q_heads = torch.permute(q_heads, (0, 2, 1, 3)) # [B, N, h, D/h] -> [B, h, N, D/h]
+        k_heads = torch.permute(k_heads, (0, 2, 1, 3))
+        v_heads = torch.permute(v_heads, (0, 2, 1, 3))
