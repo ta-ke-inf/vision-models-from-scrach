@@ -56,7 +56,7 @@ class MultiHeadSelfAttention(nn.Module):
         k_heads = torch.permute(k_heads, (0, 2, 1, 3)) # [B, N, h, D/h] -> [B, h, N, D/h]
         v_heads = torch.permute(v_heads, (0, 2, 1, 3)) # [B, N, h, D/h] -> [B, h, N, D/h]
 
-        # Layer Normalization
+
         k_heads_t = torch.permute(k_heads, (0, 1, 3, 2)) # [B, h, D/h, N]
         attn_weight = F.softmax((q_heads @ k_heads_t) / self.sqrt_dh, dim=2) # [B, h, N, N]
 
