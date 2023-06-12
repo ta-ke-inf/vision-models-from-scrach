@@ -34,20 +34,39 @@ class MultiHeadSelfAttention(nn.Module):
         )
 
 
-    def forward(self, x):
+    def forward(self, x) -> torch.Tensor:
         """
         Args:
             x (torch.Tensor): [B, N, D]
+
+        Returns:
+            torch.Tensor: output tensor, [B, N, D]
         """
         q = self.w_q(x) # [B, N, D] -> [B, N, D]
         k = self.w_k(x) # [B, N, D] -> [B, N, D]
         v = self.w_v(x) # [B, N, D] -> [B, N, D]
 
         batch_size, num_patch, _ = x.size()
+
         q_heads = q.view(batch_size, num_patch, self.head, self.head_dim) # [B, N, D] -> [B, N, h, D/h]
         k_heads = k.view(batch_size, num_patch, self.head, self.head_dim)
         v_heads = v.view(batch_size, num_patch, self.head, self.head_dim)
 
         q_heads = torch.permute(q_heads, (0, 2, 1, 3)) # [B, N, h, D/h] -> [B, h, N, D/h]
-        k_heads = torch.permute(k_heads, (0, 2, 1, 3))
-        v_heads = torch.permute(v_heads, (0, 2, 1, 3))
+        k_heads = torch.permute(k_heads, (0, 2, 1, 3)) # [B, N, h, D/h] -> [B, h, N, D/h]
+        v_heads = torch.permute(v_heads, (0, 2, 1, 3)) # [B, N, h, D/h] -> [B, h, N, D/h]
+
+        # Layer Normalization
+        k_heads_t = torch.permute(k_heads, (0, 1, 3, 2)) # [B, h, D/h, N]
+        attn_weight = F.softmax((q_heads @ k_heads_t) / self.sqrt_dh, dim=2) # [B, h, N, N]
+
+        x = attn_weight @ v_heads # [B, h, N, D/h]
+        x = torch.permute(x, (0, 2, 1, 3)).reshape(batch_size, num_patch, self.emb_dim)
+
+        return x
+
+if __name__ == "__main__":
+    mhsa = MultiHeadSelfAttention()
+    x = torch.randn([16, 5, 384])
+    x = mhsa.forward(x)
+    print(x.shape)
