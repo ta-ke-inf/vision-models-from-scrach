@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from src.modules.vit_input_layer import VitInputLayer
+from src.vision_transformer.modules.vit_input_layer import VitInputLayer
 
 def test_vit_input_layer() -> None:
 

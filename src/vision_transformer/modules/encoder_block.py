@@ -1,23 +1,19 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from multi_head_self_attention import MultiHeadSelfAttention
+from .multi_head_self_attention import MultiHeadSelfAttention
 
 class EncoderBlock(nn.Module):
     def __init__(self,
-                 hidden_dim = 384*4,
+                 hidden_dim:int = 384*4,
                  emb_dim:int = 384,
                  head:int = 3,
                  dropout:float = 0.
                  ) -> None:
 
         super(EncoderBlock, self).__init__()
-        self.emb_dim = emb_dim
-        self.head = head
-        self.dropout = dropout
 
         self.layer_norm_1 = nn.LayerNorm(emb_dim)
-        self.mhsa = MultiHeadSelfAttention(emb_dim=self.emb_dim, head=self.head, dropout=self.dropout)
+        self.mhsa = MultiHeadSelfAttention(emb_dim=emb_dim, head=head, dropout=dropout)
 
         self.layer_norm_2 = nn.LayerNorm(emb_dim)
         self.mlp = nn.Sequential(
@@ -40,6 +36,7 @@ class EncoderBlock(nn.Module):
         x = self.mhsa(self.layer_norm_1(x)) + x
         x = self.mlp(self.layer_norm_2(x)) + x
         return x
+
 
 if __name__ == "__main__":
     x = torch.randn([16, 5, 384])
