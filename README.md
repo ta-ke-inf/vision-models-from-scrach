@@ -6,5 +6,8 @@
 3. install poetry package
 ```
 poetry install
+```
 4. start environment
+```
 poetry shell
+```
